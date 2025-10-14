@@ -4,115 +4,64 @@
 """
 Jeux  de Nim (variante simple et de Marienbad)
 """
-def game_vs_bot(player,n_matches):
-    actual_player = player
-    second_player = "Computer"
-    victory = False
-    last_player_move = None  # Pour stocker le dernier coup du joueur
 
-    while not victory:
-        if actual_player == player:
-            print(f"It is {actual_player}'s turn.")
-
-            # Validation loop
-            valid = False
-            while not valid:
-                try:
-                    action = int(input('How many matches would you like to take? (1-4) '))
-                    if 1 <= action <= 4:
-                        valid = True
-                    else:
-                        print("Please choose a number between 1 and 4.")
-                except ValueError:
-                    print("Invalid input. Please enter a number.")
-
-            print(f'You have taken {action} matches')
-            n_matches -= action
-            last_player_move = action  # Mémoriser le coup du joueur
-            print(f'The actual number of matches is {n_matches}\n')
-
-        else:
-            print(f"It is {second_player}'s turn.")
-            if last_player_move is not None:
-                bot_move = 5 - last_player_move
-            else:
-                # Si le bot commence, il joue un coup aléatoire ou optimal
-                bot_move = min(4, n_matches % 5 if n_matches % 5 != 0 else 1)
-
-            # S'assurer que le coup est valide
-            bot_move = max(1, min(bot_move, min(4, n_matches)))
-            print(f'The bot has taken {bot_move} matches')
-            n_matches -= bot_move
-            print(f'The actual number of matches is {n_matches}\n')
-
-        if n_matches <= 0:
-            victory = True
-            loser = actual_player
-            winner = second_player if actual_player == player else player
-            print('=======================================================')
-            print(f"    {winner} has won! {loser} took the last match and lost.")
-            print('=======================================================')
-        else:
-            actual_player = second_player if actual_player == player else player
-
-
-def game_player_vs_player(n_matches, start_player, second_player):
+def standard_game_vs_bot(starting_player, n_matches):
     """
-    The function asks the player who is playing which number of
-    matches does he want to take, then it goes to the second player.
-    The function keeps track of the number of matches played and
-    when it goes to 0 the actual player win the game.
-
-    :param n_matches: the original  number of matches.
-    :param start_player: the player who start the game.
-    :param second_player: the second player.
+    This function is the logic of the standard game against a bot.
+    :param starting_player: the player or bot
+    :param n_matches: the original number of matches
     :return:
     """
-    actual_player = start_player
-    victory = False
-    while not victory:
-        print(f"It is {actual_player}'s turn.")
+    human_player = starting_player if starting_player != "Computer" else "Player"
+    bot = "Computer"
+    actual_player = starting_player
+    last_player_move = None
 
-        # Validation loop
-        valid = False
-        while not valid:
-            try:
-                action = int(input('How many matches would you like to take? (1-4) '))
-                if 1 <= action <= 4:
-                    valid = True
-                else:
-                    print("Please choose a number between 1 and 4.")
-            except ValueError:
-                print("Invalid input. Please enter a number.")
-
-        print(f'You have taken {action} matches')
-        n_matches -= action
-        print(f'The actual number of matches is {n_matches}\n')
+    while n_matches > 0:
+        if actual_player == human_player:
+            n_matches, last_player_move = play_turn(human_player, n_matches)
+        else:
+            print(f"{bot}'s turn.")
+            move  = bot_strat(n_matches, last_player_move)
+            n_matches -= move
+            last_player_move = move
+            announce_move(bot, move, n_matches)
 
         if n_matches <= 0:
-            victory = True
-            loser = actual_player
-            winner = second_player if actual_player == start_player else start_player
-            print('=======================================================')
-            print(f"{   winner} has won! {loser} took the last match and lost.")
-            print('=======================================================')
+            winner = bot if actual_player == human_player else human_player
+            announce_winner(actual_player, winner)
         else:
-            actual_player = second_player if actual_player == start_player else start_player
+            actual_player = bot if actual_player == human_player else human_player
+
+
+def standard_player_vs_player(n_matches,player1, player2):
+    """
+    This function is the logic of the standard game between two players.
+    :param n_matches: the original number of matches
+    :param player1: player 1
+    :param player2: player 2
+    :return:
+    """
+    actual_player = player1
+    while n_matches > 0:
+        n_matches, _ = play_turn(actual_player, n_matches)
+        if n_matches <= 0:
+            winner = player2 if actual_player == player1 else player1
+            announce_winner(actual_player, winner)
+        else:
+            actual_player = player2 if actual_player == player1 else player1
 
 
 def who_starts(player1, player2):
     """
-    This function takes in input the players and ask
-    who is starting, then return the player accordingly.
+    This function ask who is starting,
+    then return the player accordingly.
     :param player1: the first player
     :param player2: the second player
     :return: the player that will start in the game.
     """
-    user_choice = input("Who start the game? player 1 or 2? ")
-    if user_choice == '1':
-        return player1
-    else:
-        return player2
+    choice = input("Who starts the game? player 1 or 2? ").strip()
+    return player1 if choice == '1' else player2
 
 
 def ask_player_name(n):
@@ -121,30 +70,100 @@ def ask_player_name(n):
     :param n: the number of the player.
     :return: the name of the player.
     """
-    player_name = input("Player name: ").strip().lower().capitalize()
+    player_name = input("Player name: ").strip().capitalize()
     print(f"Player {n}: {player_name}")
     return player_name
+
+def ask_move(player):
+    """
+    The ask_move function asks the player's move,
+    check if its valid and return it.
+    :param player: the player
+    :return: the validated move
+    """
+    while True:
+        try:
+            move = int(input(f"{player}, how many matches would you like to take? (1-4) "))
+            if 1 <= move <= 4:
+                return move
+            print("Please choose a number between 1 and 4.")
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+
+
+def announce_move(player, move, remaining):
+    """
+    This function print out the move and the remaining matches.
+    :param player: the actual player
+    :param move: the move that was played
+    :param remaining: the number of matches remaining
+    :return: 2 f strings accordingly
+    """
+    print(f"{player} has taken {move} matches.")
+    print(f"Remaining matches: {remaining}\n")
+
+
+def announce_winner(loser, winner):
+    """
+    This function announces the winner of the game with a simple f string
+    :param loser: the person (or bot) who loosed the game
+    :param winner: the winner of the game
+    :return: print an f string accordingly to the result
+    """
+    print('=======================================================')
+    print(f"    {winner} has won! {loser} took the last match and lost.")
+    print('=======================================================')
+
+
+def play_turn(player, n_matches):
+    """
+    This function ask the player about his move, and return it.
+    :param player: the actual player
+    :param n_matches: the number of matches
+    :return: the new number of matches and the move
+    """
+    move = ask_move(player)
+    n_matches -= move
+    announce_move(player, move, n_matches)
+    return n_matches, move
+
+
+def bot_strat(n_matches, last_player_move):
+    """
+    This function simulate the bot strategy.
+    :param n_matches: the number of matches
+    :param last_player_move: the last player move
+    :return: an 'optimal' move according to the strategy.
+    """
+    if last_player_move is not None:
+        move = 5 - last_player_move
+    else:
+        move = n_matches % 5 or 1
+    return max(1, min(move, min(4, n_matches)))
 
 
 def main():
     """
     The main function of the game.
     We add the number of matches.
-    Asks for players names.
+    Asks for players names and mode (against bot or other player)
     Then we determine who start the game.
     And finally we start the game.
-    :return: the logic of the game.
     """
     number_of_matches = 21
-    player_or_bot = input('Do you want to play against a (b)ot or a second (p)layer?').strip().lower()
-    player_one = ask_player_name(1)
-    if player_or_bot == 'b':
-        game_vs_bot(player_one, number_of_matches)
+    #marienbad = {'pile1': 1, 'pile2': 3, 'pile3': 5, 'pile4': 7}
+    mode = input('Play against a (b)ot or a second (p)layer ?').strip().lower()
+    player1 = ask_player_name(1)
+
+    if mode == 'b':
+        starting_player = who_starts(player1, "Computer")
+        standard_game_vs_bot(starting_player, number_of_matches)
     else:
-        player_two = ask_player_name(2)
-        starting_player = who_starts(player_one, player_two)
-        second_player = player_two if starting_player == player_one else player_one
-        game_player_vs_player(number_of_matches, starting_player, second_player)
+        player2 = ask_player_name(2)
+        starting_player = who_starts(player1, player2)
+        second_player = player2 if starting_player == player1 else player1
+        standard_player_vs_player(number_of_matches, starting_player, second_player)
+
 
 if __name__ == '__main__':
     main()
