@@ -1,4 +1,5 @@
-🕹️ Jeu de Nim — Variante Simple et Marienbad
+### 🕹️ Jeu de Nim — Variante Simple (et Marienbad à venir)
+
 Ce projet est une implémentation en Python du célèbre jeu de Nim, dans sa version simple (une seule pile d’allumettes). Il propose deux modes de jeu :
 
 - 👤 Joueur contre joueur
@@ -18,7 +19,7 @@ Ce projet est une implémentation en Python du célèbre jeu de Nim, dans sa ver
 
 - Stratégie optimale du bot : joue pour laisser un multiple de 5 à l’adversaire
 
-🚀 Lancer le jeu:
+🚀 Lancer le jeu :
 
 Assurez-vous d’avoir Python 3 installé, puis exécutez :
 
