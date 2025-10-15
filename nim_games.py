@@ -5,6 +5,54 @@
 Jeux  de Nim (variante simple et de Marienbad)
 """
 
+def marienbad_play_turn(player, piles):
+    """
+    This function handles a single turn for a player in Marienbad.
+    It show prompts for row and number of matches to remove,
+    check if they are valid and return the updated piles.
+    :param player: the actual player
+    :param piles: the actual status of piles
+    :return: the new status of piles
+    """
+    while True:
+        try:
+            print(f"\nCurrent piles: {piles}")
+            row = int(input(f"{player}, choose a row (1-{len(piles)}")) -1
+            if row < 0 or row >= len(piles) or piles[row] == 0:
+                print("\nThat is not a valid row. Please try again.")
+                continue
+            count = int(input(f"{player}, how many matches do you want to remove from {row+1}"))
+            if 1 <= count <= piles[row]:
+                piles[row] -= count
+                print(f"{player} removed {count} from row {row + 1}.")
+                return piles
+            else:
+                print("\nInvalid number of matches. Please try again.")
+        except ValueError:
+            print("Invalid input. Try again.")
+
+
+def marienbad_player_vs_player(player1, player2):
+    """
+    This function simulate the marienbad game logic between two players.
+    :param player1: player 1
+    :param player2: player 2
+    :return: None
+    """
+    piles = [1, 3, 5, 7]
+    actual_player = player1
+
+    while any(pile >0 for pile in piles):
+        piles = marienbad_play_turn(actual_player, piles)
+
+        if all(pile == 0 for pile in piles):
+            winner = player2 if actual_player == player1 else player1
+            announce_winner(actual_player, winner)
+            break
+        else:
+            actual_player = player2 if actual_player == player1 else player1
+
+
 def standard_game_vs_bot(starting_player, n_matches):
     """
     This function is the logic of the standard game against a bot.
@@ -22,7 +70,7 @@ def standard_game_vs_bot(starting_player, n_matches):
             n_matches, last_player_move = play_turn(human_player, n_matches)
         else:
             print(f"{bot}'s turn.")
-            move  = bot_strat(n_matches, last_player_move)
+            move = bot_strat(n_matches, last_player_move)
             n_matches -= move
             last_player_move = move
             announce_move(bot, move, n_matches)
@@ -151,7 +199,6 @@ def main():
     And finally we start the game.
     """
     number_of_matches = 21
-    #marienbad = {'pile1': 1, 'pile2': 3, 'pile3': 5, 'pile4': 7}
     mode = input('Play against a (b)ot or a second (p)layer ?').strip().lower()
     player1 = ask_player_name(1)
 
