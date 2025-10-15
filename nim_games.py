@@ -4,6 +4,44 @@
 """
 Jeux  de Nim (variante simple et de Marienbad)
 """
+def game_menu():
+    print("\n=== Welcome to the Matchstick Game ===")
+    print("Choose your game mode:")
+    print("  (s) Standard vs Player")
+    print("  (b) Standard vs Bot")
+    print("  (m) Marienbad vs Player")
+    mode = input("\nWhich mode do you want to play?  ").strip().lower()
+
+    # Standard mode
+    if mode in ['s', 'b']:
+        number_of_matches = 21
+        player1 = ask_player_name(1)
+
+        # Against a bot
+        if mode == 'b':
+            starting_player = who_starts(player1, "Computer")
+            standard_game_vs_bot(starting_player, number_of_matches)
+
+        # Against another player (or yourself, why not)
+        else:
+            player2 = ask_player_name(2)
+            starting_player = who_starts(player1, player2)
+            second_player = player2 if starting_player == player1 else player1
+            standard_player_vs_player(number_of_matches, starting_player, second_player)
+
+    # The marienbad mode
+    elif mode == 'm':
+        print("\n=== Welcome to the Marienbad Mode ===")
+        player1 = ask_player_name(1)
+        player2 = ask_player_name(2)
+        starting_player = who_starts(player1, player2)
+        second_player = player2 if starting_player == player1 else player1
+        marienbad_player_vs_player(starting_player, second_player)
+
+    # The user don't want to cooperate mode
+    else:
+        print("Invalid choice. Please restart and choose a valid mode.")
+
 
 def marienbad_play_turn(player, piles):
     """
@@ -17,7 +55,7 @@ def marienbad_play_turn(player, piles):
     while True:
         try:
             print(f"\nCurrent piles: {piles}")
-            row = int(input(f"{player}, choose a row (1-{len(piles)}")) -1
+            row = int(input(f"{player}, choose the pile (1-{len(piles)})")) -1
             if row < 0 or row >= len(piles) or piles[row] == 0:
                 print("\nThat is not a valid row. Please try again.")
                 continue
@@ -193,23 +231,9 @@ def bot_strat(n_matches, last_player_move):
 def main():
     """
     The main function of the game.
-    We add the number of matches.
-    Asks for players names and mode (against bot or other player)
-    Then we determine who start the game.
-    And finally we start the game.
+    It calls the game menu.
     """
-    number_of_matches = 21
-    mode = input('Play against a (b)ot or a second (p)layer ?').strip().lower()
-    player1 = ask_player_name(1)
-
-    if mode == 'b':
-        starting_player = who_starts(player1, "Computer")
-        standard_game_vs_bot(starting_player, number_of_matches)
-    else:
-        player2 = ask_player_name(2)
-        starting_player = who_starts(player1, player2)
-        second_player = player2 if starting_player == player1 else player1
-        standard_player_vs_player(number_of_matches, starting_player, second_player)
+    game_menu()
 
 
 if __name__ == '__main__':
