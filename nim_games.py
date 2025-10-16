@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import random
 """
 Jeux  de Nim (variante simple et de Marienbad)
 """
@@ -10,6 +11,7 @@ def game_menu():
     print("  (s) Standard vs Player")
     print("  (b) Standard vs Bot")
     print("  (m) Marienbad vs Player")
+    print("  (mb) Marienbad vs Bot")
     mode = input("\nWhich mode do you want to play?  ").strip().lower()
 
     # Standard mode
@@ -32,15 +34,31 @@ def game_menu():
     # The marienbad mode
     elif mode == 'm':
         print("\n=== Welcome to the Marienbad Mode ===")
+        print("=== Player Vs Player ===")
         player1 = ask_player_name(1)
         player2 = ask_player_name(2)
         starting_player = who_starts(player1, player2)
         second_player = player2 if starting_player == player1 else player1
         marienbad_player_vs_player(starting_player, second_player)
 
+    elif mode == 'mb':
+        print("\n=== Welcome to the Marienbad Mode ===")
+        print("=== Player Vs Bot ===")
+        player1 = ask_player_name(1)
+        starting_player = who_starts(player1, "Computer")
+
     # The user don't want to cooperate mode
     else:
         print("Invalid choice. Please restart and choose a valid mode.")
+
+def marienbad_bot_strategy(piles):
+    piles_not_empty = [i for i, pile in enumerate(piles) if pile > 0]
+    bot_pile_choice = random.choice(piles_not_empty)
+    bot_matches_choice = random.choice(1, piles[bot_pile_choice])
+    print(f"Computer has taken {bot_matches_choice} matches from the {bot_pile_choice} pile.")
+    piles[bot_pile_choice] -= bot_matches_choice
+    return piles
+
 
 
 def marienbad_play_turn(player, piles):
