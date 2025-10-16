@@ -7,25 +7,28 @@ Jeux  de Nim (variante simple et de Marienbad)
 """
 def game_menu():
     print("\n=== Welcome to the Matchstick Game ===")
-    print("Choose your game mode:")
-    print("  (s) Standard vs Player")
-    print("  (b) Standard vs Bot")
-    print("  (m) Marienbad vs Player")
-    print("  (mb) Marienbad vs Bot")
+    print("🕹️ Choose your game mode:")
+    print("  (s) Standard vs Player👤")
+    print("  (b) Standard vs Bot 🤖")
+    print("  (m) Marienbad vs Player👤")
+    print("  (mb) Marienbad vs Bot 🤖")
     mode = input("\nWhich mode do you want to play?  ").strip().lower()
 
     # Standard mode
     if mode in ['s', 'b']:
+        print("\n=== Welcome to the Standard Mode ===")
         number_of_matches = 21
         player1 = ask_player_name(1)
 
         # Against a bot
         if mode == 'b':
+            print("   ===👤 Player Vs Bot 🤖 ===")
             starting_player = who_starts(player1, "Computer")
             standard_game_vs_bot(starting_player, number_of_matches)
 
         # Against another player (or yourself, why not)
         else:
+            print("   ===👤 Player Vs Player 👤 ===")
             player2 = ask_player_name(2)
             starting_player = who_starts(player1, player2)
             second_player = player2 if starting_player == player1 else player1
@@ -34,7 +37,7 @@ def game_menu():
     # The marienbad mode
     elif mode == 'm':
         print("\n=== Welcome to the Marienbad Mode ===")
-        print("=== Player Vs Player ===")
+        print("   ===👤 Player Vs Player 👤 ===")
         player1 = ask_player_name(1)
         player2 = ask_player_name(2)
         starting_player = who_starts(player1, player2)
@@ -43,22 +46,57 @@ def game_menu():
 
     elif mode == 'mb':
         print("\n=== Welcome to the Marienbad Mode ===")
-        print("=== Player Vs Bot ===")
+        print("   ===👤 Player Vs Bot 🤖 ===")
         player1 = ask_player_name(1)
-        starting_player = who_starts(player1, "Computer")
+        starting_player = who_starts(player1, "Computer 🤖")
+        marienbad_player_vs_bot(starting_player, player1, "Computer 🤖")
 
     # The user don't want to cooperate mode
     else:
         print("Invalid choice. Please restart and choose a valid mode.")
 
+
 def marienbad_bot_strategy(piles):
+    """
+    This is the 'strategy' of the bot for the marienbad mode,
+    it just does random choices each times (so its totally non-optimal)
+    :param piles: the actual status of the piles.
+    :return: the updated piles.
+    """
     piles_not_empty = [i for i, pile in enumerate(piles) if pile > 0]
     bot_pile_choice = random.choice(piles_not_empty)
-    bot_matches_choice = random.choice(1, piles[bot_pile_choice])
+    bot_matches_choice = random.randint(1, piles[bot_pile_choice])
     print(f"Computer has taken {bot_matches_choice} matches from the {bot_pile_choice} pile.")
     piles[bot_pile_choice] -= bot_matches_choice
     return piles
 
+
+def marienbad_player_vs_bot(starting_player, player1, bot_name = "Computer 🤖"):
+    """
+    This function handles the logiq for a marienbad game player vs bot.
+    It just checks the actual status of the piles each turn and
+    switch 'players' till there's a winner (no more matches lefts).
+    :param starting_player: starting player.
+    :param player1: the player 1.
+    :param bot_name: the bot.
+    :return: calls the announce_winner function when anyone wins.
+    """
+    piles = [1, 3, 5 ,7]
+    actual_player = starting_player
+
+    while any(pile > 0 for pile in piles):
+        print(f"\nCurrent piles: {piles}")
+        if actual_player == player1:
+            piles = marienbad_play_turn(player1, piles)
+        else:
+            piles = marienbad_bot_strategy(piles)
+
+        if all(pile == 0 for pile in piles):
+            winner = bot_name if actual_player == player1 else player1
+            announce_winner(actual_player, winner)
+            break
+        else:
+            actual_player = bot_name if actual_player == player1 else player1
 
 
 def marienbad_play_turn(player, piles):
@@ -117,7 +155,7 @@ def standard_game_vs_bot(starting_player, n_matches):
     :return:
     """
     human_player = starting_player if starting_player != "Computer" else "Player"
-    bot = "Computer"
+    bot = "Computer 🤖"
     actual_player = starting_player
     last_player_move = None
 
@@ -174,7 +212,7 @@ def ask_player_name(n):
     :param n: the number of the player.
     :return: the name of the player.
     """
-    player_name = input("Player name: ").strip().capitalize()
+    player_name = input(f"Player {n} name: ").strip().capitalize()
     print(f"Player {n}: {player_name}")
     return player_name
 
