@@ -55,11 +55,11 @@ def marienbad_play_turn(player, piles):
     while True:
         try:
             print(f"\nCurrent piles: {piles}")
-            row = int(input(f"{player}, choose the pile (1-{len(piles)})")) -1
+            row = int(input(f"{player}, choose the pile (1-{len(piles)}): ")) -1
             if row < 0 or row >= len(piles) or piles[row] == 0:
                 print("\nThat is not a valid row. Please try again.")
                 continue
-            count = int(input(f"{player}, how many matches do you want to remove from {row+1}"))
+            count = int(input(f"{player}, how many matches do you want to remove from {row+1}: "))
             if 1 <= count <= piles[row]:
                 piles[row] -= count
                 print(f"{player} removed {count} from row {row + 1}.")
@@ -160,6 +160,7 @@ def ask_player_name(n):
     print(f"Player {n}: {player_name}")
     return player_name
 
+
 def ask_move(player):
     """
     The ask_move function asks the player's move,
@@ -172,9 +173,9 @@ def ask_move(player):
             move = int(input(f"{player}, how many matches would you like to take? (1-4) "))
             if 1 <= move <= 4:
                 return move
-            print("Please choose a number between 1 and 4.")
+            print("Please choose a number between 1 and 4. ")
         except ValueError:
-            print("Invalid input. Please enter a number.")
+            print("Invalid input. Please enter a number. ")
 
 
 def announce_move(player, move, remaining):
