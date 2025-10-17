@@ -25,6 +25,23 @@ Assurez-vous d’avoir **Python 3 installé**, puis exécutez :
 
     python nim_games.py
 
+### 🧱 Structure du code
+- **main()** : point d’entrée
+- **game_menu()** : menu principal du jeu et choix de mode de jeu
+- **ask_player_name()** : fonction pour entrer le nom du joueur
+- **who_starts()** : choix du joueur qui commence la partie
+- **ask_move()** : demande du tour du joueur
+- **play_turn()** : logique d'un tour (mode standard)
+- **marienbad_play_turn()** : logique d'un tour (mode marienbad)
+- **announce_move()** : affichage visuel du tour
+- **bot_strat** : stratégie du bot pour le mode standard
+- **standard_game_vs_bot()** : logique d'une partie d'un joueur contre le bot (mode standard)
+- **standard_game_vs_player()** : logique partie joueur contre joueur (mode standard)
+- **marienbad_bot_strategy()** : la 'stratégie' du bot (mode marienbad)
+- **marienbad_player_vs_bot()** : logique de jeu vs bot (mode marienbad)
+- **marienbad_player_vs_player()**: logique de jeu player vs player (mode marienbad)
+- **announce_winner()** : affichage du gagnant et du perdant
+
 ### 🧠 Règles du jeu (Standard)
 - Il y a un **nombre fixe d’allumettes** (par défaut : 21).
 
